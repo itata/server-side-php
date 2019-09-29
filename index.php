@@ -7,8 +7,20 @@
   $data = json_decode(file_get_contents("php://input"), true);
   $item = $data['item'];
   $token = $data['token'];
-  if($data != null) {
-    $charge = \Stripe\Charge::create(['amount' => 50, 'currency' => 'jpy', 'source' => $token['id']]);
+  $email = $data['email'];
+  if($data != null) :
+    // Create a Customer:
+    $checkUser = \Stripe\Customer::all(['email' => $email]);
+    if(count($checkUser['data']) > 0) {
+      $customerID = $checkUser['data'][0]['id'];
+    } else {
+      $customer = \Stripe\Customer::create([
+        'source' => $token['id'],
+        'email' => 'paying.user@example.com',
+      ]);
+      $customerID = $customer->id;
+    }
+    $charge = \Stripe\Charge::create(['amount' => 50, 'currency' => 'jpy', 'customer' => $customerID]);
     echo $charge['status'];
-  }
+  endif;
 ?>

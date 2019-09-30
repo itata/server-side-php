@@ -16,11 +16,11 @@
     } else {
       $customer = \Stripe\Customer::create([
         'source' => $token['id'],
-        'email' => 'paying.user@example.com',
+        'email' => $email,
       ]);
       $customerID = $customer->id;
     }
-    $charge = \Stripe\Charge::create(['amount' => 50, 'currency' => 'jpy', 'customer' => $customerID]);
+    $charge = \Stripe\Charge::create(['amount' => $item['price'], 'currency' => 'jpy', 'customer' => $customerID]);
     echo $charge['status'];
   endif;
 ?>
